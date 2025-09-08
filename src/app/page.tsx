@@ -77,7 +77,7 @@ export default function Home() {
           {fortuneTellerArt}
         </div>
 
-        <p className="text-lg text-gray-300 mb-8 h-12">"{message}"</p>
+        <p className="text-lg text-gray-300 mb-8 h-12">&quot;{message}&quot;</p>
 
         <button
           onClick={handleFortune}
