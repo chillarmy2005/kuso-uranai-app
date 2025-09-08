@@ -1,103 +1,106 @@
-import Image from "next/image";
+'use client';
+
+import { useState } from 'react';
+
+// 占いデータの定義
+const fortunes = ['大吉', '吉', '中吉', '小吉', '末吉', '凶', '大凶', 'うんこ'];
+const colors = ['赤', '青', '黄', '緑', '紫', 'オレンジ', 'ピンク', '黒', '白', '金', '銀', '透明'];
+const items = ['石ころ', '枯れ葉', '折れた傘', '空き缶', '猫のひげ', 'カラスの羽', '使い古しの電池', 'そこらへんに転がってる石'];
+const messages = [
+  'ワシの占い、当たるも八卦、当たらぬも八卦じゃ...フォッフォッフォ...',
+  'おぬしの未来、ワシにはお見通しじゃ...',
+  'ふむ...おぬしのオーラは...なかなか興味深い色をしておるわい...',
+  '今日の運勢を占ってやろう。まあ、気休め程度に聞いておくがよい...',
+  '天の啓示が降りてきたわい！',
+  '占いの結果に一喜一憂するでないぞ。大事なのは心持ちじゃ。',
+  'ほう…そんなものが出たか。面白い。',
+];
+// 新しい占いデータを追加
+const workLucks = ['大きな契約が取れるかも', '上司に褒められる', '単純作業でミスをする', '同僚とラーメンを食べに行くと吉', '新しいアイデアが閃くが、実行はまだ早い'];
+const loveLucks = ['素敵な出会いがある...かもしれん', 'パートナーとの絆が深まる...気がする', '失恋の予感...知らんけど', 'ライバル出現！...気のせいか', 'デートに誘われる...かもしれん'];
+const moneyLucks = ['臨時収入がありそうじゃ', '宝くじが当たる...と良いのう', '無駄遣いに注意せんとな', '投資が成功する...かもしれん', '財布を落とす...かもしれんから気をつけなされ'];
+
+
+// インチキ占い師のアスキーアート
+const fortuneTellerArt = `
+　　　　　　　　　　　　　　,. -- ､
+　　　　　　　　　　　　　, '　　　 ',
+　　　　　　　　　　　　 /　　　　　 ヽ
+　　　　　　　　　　　 /　, -- ､　　　ヽ
+　　　　　　　　　　　 |　|　　　|　　　 |
+　　　　　　　　　　　 |　|　　　|　　　 |
+　　　　　　　　　　　 ヽ|　　　|ﾉ　　 /
+　　　　　　　　　　　　 ヽ　　ﾉ　　 /
+　　　　　　　　　　　　　 ヽ, '　　 /
+　　　　　　　　　　　　　　/　　　 |
+　　　　　　　　　　　　　 /　　　　|
+`;
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [message, setMessage] = useState('ワシが今日の運勢を占ってやろう...');
+  const [fortune, setFortune] = useState('');
+  const [luckyColor, setLuckyColor] = useState('');
+  const [luckyItem, setLuckyItem] = useState('');
+  // 新しいStateを追加
+  const [workLuck, setWorkLuck] = useState('');
+  const [loveLuck, setLoveLuck] = useState('');
+  const [moneyLuck, setMoneyLuck] = useState('');
+  const [showResult, setShowResult] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleFortune = () => {
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    const randomFortune = fortunes[Math.floor(Math.random() * fortunes.length)];
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    const randomItem = items[Math.floor(Math.random() * items.length)];
+    // 新しい運勢をランダムに選択
+    const randomWorkLuck = workLucks[Math.floor(Math.random() * workLucks.length)];
+    const randomLoveLuck = loveLucks[Math.floor(Math.random() * loveLucks.length)];
+    const randomMoneyLuck = moneyLucks[Math.floor(Math.random() * moneyLucks.length)];
+
+    setMessage(randomMessage);
+    setFortune(randomFortune);
+    setLuckyColor(randomColor);
+    setLuckyItem(randomItem);
+    // 新しいStateを更新
+    setWorkLuck(randomWorkLuck);
+    setLoveLuck(randomLoveLuck);
+    setMoneyLuck(randomMoneyLuck);
+    setShowResult(true);
+  };
+
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center p-8 text-center">
+      <div className="max-w-md w-full">
+        <h1 className="text-5xl font-bold mb-4 text-yellow-300" style={{ fontFamily: "'MS Mincho', serif" }}>くそ占い</h1>
+        
+        <div className="text-lg whitespace-pre-wrap font-mono text-green-400 my-6">
+          {fortuneTellerArt}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        <p className="text-lg text-gray-300 mb-8 h-12">"{message}"</p>
+
+        <button
+          onClick={handleFortune}
+          className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-3 px-8 rounded-full text-xl transition-all duration-300 ease-in-out transform hover:scale-105 shadow-lg shadow-purple-500/50"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          占う
+        </button>
+
+        {showResult && (
+          <div className="mt-10 p-6 border-4 border-dashed border-yellow-500 rounded-lg bg-gray-800/50 animate-fade-in">
+            <h2 className="text-2xl font-bold mb-4 text-yellow-400">--- 占い結果 ---</h2>
+            <div className="space-y-3 text-left">
+              <p className="text-xl"><strong>今日の運勢:</strong> {fortune}</p>
+              <p className="text-xl"><strong>ラッキーカラー:</strong> {luckyColor}</p>
+              <p className="text-xl"><strong>ラッキーアイテム:</strong> {luckyItem}</p>
+              {/* 新しい運勢を表示 */}
+              <p className="text-xl"><strong>仕事運:</strong> {workLuck}</p>
+              <p className="text-xl"><strong>恋愛運:</strong> {loveLuck}</p>
+              <p className="text-xl"><strong>金運:</strong> {moneyLuck}</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
